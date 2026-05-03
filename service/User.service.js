@@ -12,10 +12,27 @@ module.exports.CreateUser = async ({firstname, lastname, email, password}) => {
             lastname
         },
         email,
-        password: await UserModule.hashPassword(password)
+        password
         
     })
     return User;
+},
+
+module.exports.Login = async ({email,password})=>{
+    if(!email || !password){
+        throw new Error("All fields are required");
+     }
+     const user = await UserModel.findOne({email}).select("+password");
+        if (!user){
+            throw new Error("Invalid email or password");
+        }
+        const isMatch = await user.comparePassword(password);
+        if(!isMatch){
+            throw new Error("Invalid email or password");
+        }
+        return user;
 }
+
+
 
 
